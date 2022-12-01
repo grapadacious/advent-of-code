@@ -1,0 +1,9 @@
+services:
+  app:
+    image: "python:3.14-alpine"
+    command: "python main.py"
+    working_dir: "/usr/src/app"
+    volumes:
+      - .:/usr/src/app
+    environment:
+      TZ: "America/New_York"
