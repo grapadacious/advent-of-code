@@ -8,9 +8,7 @@ def euclidian_distance(point_1, point_2):
     return math.sqrt(p1 + p2 + p3)
 
 def parse_point(point: str) -> tuple[int]:
-    x,y,z = point.split(",")
-
-    return (int(x), int(y), int(z))
+    return tuple(int(n) for n in point.split(","))
 
 def closest_connections(points: list[tuple[int]]):
     connections = []
