@@ -39,7 +39,7 @@ def add_connection(circuits: list[set[tuple[int]]], connection: set[tuple[int]])
         return circuits
 
     # Merge circuits of both junction boxes because they were in different circuits
-    for i in range(i + 1, len(circuits)):
+    for i in range(found_i + 1, len(circuits)):
         if not circuits[i].isdisjoint(connection):
             circuits[found_i] = circuits[found_i].union(circuits[i])
             found_i = i
