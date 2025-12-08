@@ -2,12 +2,10 @@ def beam_splits(input: list[str], start_index: int):
     beam_indexes = set([start_index])
 
     for i in range(2, len(input), 2):
-        line = input[i]
-
         adds = set()
         removals = set()
         for bi in beam_indexes:
-            if line[bi] == "^":
+            if input[i][bi] == "^":
                 yield bi
                 removals.add(bi)
                 adds.add(bi - 1)

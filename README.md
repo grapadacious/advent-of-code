@@ -1,6 +1,6 @@
 # Advent of Code
 
-This repository contains all the solutions I have written during Advent of Code events.
+This repository contains all the solutions I have written during [Advent of Code](https://adventofcode.com) events.
 
 All solutions are written in Python, and starting in 2025, the solutions are set up to easily run in Docker, although they can be run using a local Python environment as well.
 
