@@ -1,15 +1,14 @@
-def part_one(input: list[str]):
-    beam_indexes = set([input[0].index("S")])
+def beam_splits(input: list[str], start_index: int):
+    beam_indexes = set([start_index])
 
-    total = 0
-    for i in range(1, len(input)):
+    for i in range(2, len(input), 2):
         line = input[i]
 
         adds = set()
         removals = set()
         for bi in beam_indexes:
             if line[bi] == "^":
-                total += 1
+                yield bi
                 removals.add(bi)
                 adds.add(bi - 1)
                 adds.add(bi + 1)
@@ -17,41 +16,27 @@ def part_one(input: list[str]):
         beam_indexes = beam_indexes - removals
         beam_indexes = beam_indexes.union(adds)
 
+def part_one(input: list[str]):
+    total = 0
+    for _ in beam_splits(input, input[0].index("S")):
+        total += 1
+
     return total
 
-def remove(original: list[int], removals: set[int]):
-    result = []
-    for n in original:
-        if n not in removals:
-            result.append(n)
-
-    return result
-
 def part_two(input: list[str]):
-    beams = {input[0].index("S"): 1}
+    start_index = input[0].index("S")
+    beams = {start_index: 1}
 
-    for i in range(2, len(input), 2):
-        line = input[i]
+    for si in beam_splits(input, start_index):
+        if si - 1 not in beams:
+            beams[si - 1] = 0
+        if si + 1 not in beams:
+            beams[si + 1] = 0
 
-        removals = set()
-        keys = [k for k in beams.keys()]
+        beams[si - 1] += beams[si]
+        beams[si + 1] += beams[si]
 
-        for bi in keys:
-            if line[bi] == "^":
-                if (bi - 1) not in beams:
-                    beams[bi - 1] = beams[bi]
-                else:
-                    beams[bi - 1] += beams[bi]
-                
-                if bi + 1 not in beams:
-                    beams[bi + 1] = beams[bi]
-                else:
-                    beams[bi + 1] += beams[bi]
-
-                removals.add(bi)
-
-        for r in removals:
-            del beams[r]
+        del beams[si]
 
     return sum(beams.values())
 
