@@ -39,4 +39,3 @@ def part_two(input: list[str]):
         del beams[si]
 
     return sum(beams.values())
-
