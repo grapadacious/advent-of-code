@@ -17,11 +17,7 @@ def beam_splits(input: list[str], start_index: int):
         beam_indexes = beam_indexes.union(adds)
 
 def part_one(input: list[str]):
-    total = 0
-    for _ in beam_splits(input, input[0].index("S")):
-        total += 1
-
-    return total
+    return sum(1 for _ in beam_splits(input, input[0].index("S")))
 
 def part_two(input: list[str]):
     start_index = input[0].index("S")
