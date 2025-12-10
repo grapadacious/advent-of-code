@@ -1,9 +1,10 @@
 from .geometry import Line, Point, Rect
+from .grid import Grid
 
 def parse_tile_points(input: list[str]) -> list[Point]:
     result = []
     for line in input:
-        x, y = [float(n) for n in line.split(",")]
+        x, y = [int(n) for n in line.split(",")]
         result.append(Point(x, y))
     return result
 
@@ -20,7 +21,7 @@ def part_one(input: list[str]):
 
 def part_two(input: list[str]):
     tiles = parse_tile_points(input)
-
+    
     polygon_sides = []
     for i in range(len(tiles)):
         p1 = tiles[i]
@@ -39,6 +40,12 @@ def part_two(input: list[str]):
         for polygon_side in polygon_sides:
             for rect_side in rect.sides:
                 intersects = intersects or polygon_side.intersects(rect_side)
+
+                if intersects:
+                    break
+
+            if intersects:
+                break
 
         if not intersects:
             result = max(result, rect.area())
