@@ -6,18 +6,6 @@ def parse_tile_points(input: list[str]) -> list[Point]:
         x, y = [float(n) for n in line.split(",")]
         result.append(Point(x, y))
     return result
-    
-def parse_edges(tiles: list[tuple[int]]) -> list[tuple[tuple[int]]]:
-    segments = []
-    for i in range(len(tiles)):
-        segments.append((tiles[i], tiles[(i + 1) % len(tiles)]))
-    return segments
-
-def rect_lines(p1, p2):
-    p3 = Point(p1.x, p2.y)
-    p4 = Point(p2.x, p1.y)
-
-    return [Line(p1, p2), Line(p2, p3), Line(p3, p4), Line(p4, p1)]
 
 def part_one(input: list[str]):
     tiles = parse_tile_points(input)
