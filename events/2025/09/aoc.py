@@ -1,11 +1,5 @@
 from .geometry import Line, Point, Rect
 
-def area(p1, p2):
-    return (abs(p1[1] - p2[1]) + 1) * (abs(p1[0] - p2[0]) + 1)
-
-def parse_tiles(input: list[str]) -> list[tuple[int]]:
-    return [tuple([int(n) for n in line.split(",")]) for line in input]
-
 def parse_tile_points(input: list[str]) -> list[Point]:
     result = []
     for line in input:
@@ -18,12 +12,6 @@ def parse_edges(tiles: list[tuple[int]]) -> list[tuple[tuple[int]]]:
     for i in range(len(tiles)):
         segments.append((tiles[i], tiles[(i + 1) % len(tiles)]))
     return segments
-
-def rect_polygon(p1, p2):
-    c1 = (p1[0], p2[1])
-    c2 = (p2[0], p1[1])
-
-    return Polygon([p1, c1, p2, c2, p1])
 
 def rect_lines(p1, p2):
     p3 = Point(p1.x, p2.y)
