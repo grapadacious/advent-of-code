@@ -16,13 +16,14 @@ def timeout_handler(signum, frame):
     raise TimeoutError()
 
 class Runner:
-    def __init__(self, year, day, input_file):
+    def __init__(self, year, day, input_file, timeout=10):
         self.path = f"{ROOT_DIR}/events/{year}/{day}"
         self.input_file = input_file
         self.aoc = importlib.import_module(f"events.{year}.{day}.aoc")
         self.input = self._read_input()
         self.printer = Printer()
         self.runs = []
+        self.timeout = timeout
 
     def run(self):
         self._run_part(self.aoc.part_one)
@@ -46,7 +47,7 @@ class Runner:
         with run.output:
             signal.signal(signal.SIGALRM, timeout_handler)
 
-            signal.alarm(10)
+            signal.alarm(self.timeout)
 
             try:
                 start = time.perf_counter_ns()

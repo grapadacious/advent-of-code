@@ -21,6 +21,11 @@ def part_one(input: list[str]):
 
 def part_two(input: list[str]):
     tiles = parse_tile_points(input)
+
+    max_x = max(t.x for t in tiles)
+    max_y = max(t.y for t in tiles)
+
+    grid = Grid(max_x + 3, max_y + 2)
     
     polygon_sides = []
     for i in range(len(tiles)):
@@ -34,12 +39,16 @@ def part_two(input: list[str]):
         for j in range(i + 1, len(tiles)):
             rects.append(Rect.from_corners(tiles[i], tiles[j]))
 
+    # grid.draw_points(tiles, "#")
+    # grid.draw_lines(polygon_sides, "X")
+    # grid.print()
+
     result = 0
     for rect in rects:
         intersects = False
         for polygon_side in polygon_sides:
             for rect_side in rect.sides:
-                intersects = intersects or polygon_side.intersects(rect_side)
+                intersects = polygon_side.intersects(rect_side)
 
                 if intersects:
                     break

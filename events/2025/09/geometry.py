@@ -17,42 +17,25 @@ class Line:
         self.b = b
 
     def points(self):
-        generator = self.vertical_points if self.a.x == self.b.x else self.horizontal_points
+        i = 0
 
-        for point in generator():
-            yield point
+        if self.a.x == self.b.x:
+            i = 1
+
+        edge = ((self.a.x, self.a.y), (self.b.x, self.b.y))
+        min_i = min([edge[0][i], edge[1][i]])
+        max_i = max([edge[0][i], edge[1][i]])
+
+        for vi in range(min_i + 1, max_i):
+            p = [self.a.x, self.a.y]
+            p[i] = vi
+            yield Point(p[0], p[1])
 
     def contains(self, point: Point) -> bool:
         if self.a.x == self.b.x:
-            if point.x != self.a.x:
-                return False
-            else:
-                min_y = min(self.a.y, self.b.y)
-                max_y = max(self.a.y, self.b.y)
-                return point.y >= min_y and point.y <= max_y
-        else:
-            if point.y != self.a.y:
-                return False
-            else:
-                min_x = min(self.a.x, self.b.x)
-                max_x = max(self.a.x, self.b.x)
-                return point.x >= min_x and point.x <= max_x
-
-    def vertical_points(self):
-        y = min(self.a.y, self.b.y)
-        max_y = max(self.a.y, self.b.y)
-
-        while y <= max_y:
-            yield Point(self.a.x, y)
-            y += 1
-
-    def horizontal_points(self):
-        x = min(self.a.x, self.b.x)
-        max_x = max(self.a.x, self.b.x)
-
-        while x <= max_x:
-            yield Point(x, self.a.y)
-            x += 1
+            return point.x == self.a.x and self._between(self.a.y, self.b.y, point.y, True)
+        
+        return point.y == self.a.y and self._between(self.a.x, self.b.x, point.x, True)
 
     def intersects(self, other: "Line") -> bool:
         if not self._perpendicular(other):
@@ -67,20 +50,10 @@ class Line:
         # TODO: Fix/implement intersection logic
         # self is vertical
         if self.a.x == self.b.x:
-            min_y = min(self.a.y, self.b.y)
-            max_y = max(self.a.y, self.b.y)
-            min_x = min(other.a.x, other.b.x)
-            max_x = max(other.a.x, other.b.x)
-
-            return other.a.y > min_y and other.a.y < max_y and self.a.x > min_x and self.a.x < max_x
+            return self._between(self.a.y, self.b.y, other.a.y) and self._between(other.a.x, other.b.x, self.a.x)
         # self is horizontal
         else:
-            min_y = min(other.a.y, other.b.y)
-            max_y = max(other.a.y, other.b.y)
-            min_x = min(self.a.x, self.b.x)
-            max_x = max(self.a.x, self.b.x)
-
-            return other.a.x > min_x and other.a.x < max_x and self.a.y > min_y and self.a.y < max_y
+            return self._between(other.a.y, other.b.y, self.a.y) and self._between(self.a.x, self.b.x, other.a.x)
 
     def _perpendicular(self, other: "Line") -> bool:
         if self.a.x == self.b.x and other.a.y == other.a.y:
@@ -91,7 +64,10 @@ class Line:
         
         return False
 
-    def _between(self, a, b, c):
+    def _between(self, a, b, c, inclusive=False):
+        if inclusive:
+            return min(a, b) <= c and max(a, b) >= c
+        
         return min(a, b) < c and max(a, b) > c
     
     def length(self):
