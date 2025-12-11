@@ -21,24 +21,6 @@ class Specification:
             c += 1
 
         return c
-    
-    def fewest_presses_for_joltages(self, joltages):
-        if joltages == self.zero_joltages:
-            return 0
-        
-        if -1 in set(joltages):
-            return -1
-        
-        result = sum(self.joltages) + 1
-        for button in self.buttons:
-            new_result = self.fewest_presses_for_joltages(tuple([joltages[i] - 1 if i in button else joltages[i] for i in range(len(joltages))]))
-
-            if new_result == -1:
-                continue
-
-            result = min(result, new_result)
-            
-        return result + 1
 
     def __repr__(self):
         r = f"Lights: {set(l for l in self.lights)}\nButtons: {[set(l for l in b) for b in self.buttons]}\nJoltages: {self.joltages}\nMatrix:\n"
