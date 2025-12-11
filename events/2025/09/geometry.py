@@ -1,5 +1,34 @@
 import math
 
+def between(a, b, c, inclusive=False):
+    if inclusive:
+        return min(a, b) <= c and max(a, b) >= c
+    
+    return min(a, b) < c and max(a, b) > c
+
+def perpendicular(a: tuple[tuple[int]], b: tuple[tuple[int]]) -> bool:
+    if a[0][0] == a[1][0] and b[0][1] == b[1][1]:
+            return True
+        
+    if a[0][1] == a[1][1] and b[0][0] == b[1][0]:
+        return True
+    
+    return False
+
+def intersect(a: tuple[tuple[int]], b: tuple[tuple[int]]) -> bool:
+    if not perpendicular(a, b):
+        return False
+    
+    if a[0] == b[0] or a[1] == b[0] or a[0] == b[1] or a[1] == b[1]:
+        return False
+    
+    # a is vertical
+    if a[0][0] == a[1][0]:
+        return between(a[0][1], a[1][1], b[0][1], True) and between(b[0][0], b[1][0], a[0][0], True)
+    # a is horizontal
+    else:
+        return between(b[0][1], b[1][1], a[0][1], True) and between(a[0][0], a[1][0], b[0][0], True)
+
 class Point:
     def __init__(self, x, y):
         self.x = int(x)
@@ -44,16 +73,16 @@ class Line:
         if self.a == other.a or self.b == other.a or self.a == other.b or self.b == other.b:
             return False
         
-        if self.contains(other.a) or self.contains(other.b) or other.contains(self.a) or other.contains(self.b):
-            return True
+        # if self.contains(other.a) or self.contains(other.b) or other.contains(self.a) or other.contains(self.b):
+        #     return True
         
         # TODO: Fix/implement intersection logic
         # self is vertical
         if self.a.x == self.b.x:
-            return self._between(self.a.y, self.b.y, other.a.y) and self._between(other.a.x, other.b.x, self.a.x)
+            return self._between(self.a.y, self.b.y, other.a.y, True) and self._between(other.a.x, other.b.x, self.a.x, True)
         # self is horizontal
         else:
-            return self._between(other.a.y, other.b.y, self.a.y) and self._between(self.a.x, self.b.x, other.a.x)
+            return self._between(other.a.y, other.b.y, self.a.y, True) and self._between(self.a.x, self.b.x, other.a.x, True)
 
     def _perpendicular(self, other: "Line") -> bool:
         if self.a.x == self.b.x and other.a.y == other.a.y:
@@ -71,12 +100,10 @@ class Line:
         return min(a, b) < c and max(a, b) > c
     
     def length(self):
-        result = int(abs(self.a.x - self.b.x))
-
         if self.a.x == self.b.x:
-            result = int(abs(self.a.y - self.b.y))
-
-        return result + 1
+            return int(abs(self.a.y - self.b.y)) + 1
+        else:
+            return int(abs(self.a.x - self.b.x)) + 1
     
     def __repr__(self):
         return f"{self.a} -> {self.b}: {self.length()}"
