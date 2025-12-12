@@ -1,11 +1,13 @@
-from functools import cache
-
-graph = {}
+import gc
 
 def build_graph(input: list[str]):
+    result = {}
+
     for line in input:
         segments = line.split(" ")
-        graph[segments[0][:-1]] = set(segments[1:])
+        result[segments[0][:-1]] = set(segments[1:])
+
+    return result
 
 def count_paths_recursive(start: str, graph: dict[str, set[str]], possible: str[str], path=set(), end: str="out", required=set(["dac, fft"])):
     total = 0
@@ -28,10 +30,9 @@ def count_paths_recursive(start: str, graph: dict[str, set[str]], possible: str[
 
     return total
 
-@cache
-def count_paths_recursive(device: str, path: set[str]=set(), end: str="out", required=frozenset()):
+def count_paths_recursive(device: str, graph: dict[str, set[str]], possible: set[str], path: set[str]=set(), end: str="out", required=set()):
     if device == end:
-        return 1 if required.issubset(path) else 0
+        return 1
     
     if device in path:
         return 0
@@ -40,25 +41,28 @@ def count_paths_recursive(device: str, path: set[str]=set(), end: str="out", req
 
     result = 0
     for next in graph[device]:
-        result += count_paths_recursive(next, graph, path, end, required)
+        result += count_paths_recursive(next, graph, possible, path, end, required)
 
     path.remove(device)
 
     return result
 
-def count_paths_iter(start: str, end: str="out"):
+def count_paths_iter(start: str, graph: dict[str, list[str]], end: str="out", term: set[str]=set(["out"])):
     queue = [[start, set()]]
 
     total = 0
     while len(queue) > 0:
-        device, path = queue[0]
+        node, path = queue[0]
         queue = queue[1:]
 
-        if end in graph[device]:
+        if end in graph[node]:
             total += 1
             continue
 
-        for destination in graph[device]:
+        for destination in graph[node]:
+            if destination in term:
+                continue
+
             if destination in path:
                 continue
 
@@ -90,11 +94,12 @@ def find_valid_nodes(graph: dict[str, set[str]]):
     return visited
 
 def part_one(input: list[str]):
-    build_graph(input)
+    graph = build_graph(input)
 
     return count_paths_iter("you", graph)
 
 def part_two(input: list[str]):
-    build_graph(input)
+    graph = build_graph(input)
+    possible = find_valid_nodes(graph)
 
-    return count_paths_recursive("svr", required=frozenset(["dac", "fft"]))
+    return count_paths_recursive("svr", graph, possible, required=set(["dac", "fft"]))
