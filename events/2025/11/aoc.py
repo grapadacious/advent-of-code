@@ -7,94 +7,29 @@ def build_graph(input: list[str]):
         segments = line.split(" ")
         graph[segments[0][:-1]] = set(segments[1:])
 
-def count_paths_recursive(start: str, graph: dict[str, set[str]], possible: str[str], path=set(), end: str="out", required=set(["dac, fft"])):
-    total = 0
-
-    if end in graph[start]:
-        return 1 if required.issubset(path) else 0
-
-    for next in graph[start]:
-        if next not in possible:
-            continue
-
-        if next in path:
-            continue
-
-        path.add(next)
-
-        total += count_paths_recursive(next, graph, possible, path, end, required)
-
-        path.remove(next)
-
-    return total
-
 @cache
-def count_paths_recursive(device: str, path: set[str]=set(), end: str="out", required=frozenset()):
-    if device == end:
-        return 1 if required.issubset(path) else 0
-    
-    if device in path:
-        return 0
-    
-    path.add(device)
+def count_paths_recursive(device: str, visited_dac=True, visited_fft=True):
+    if device == "out":
+        return 1 if visited_dac and visited_fft else 0
+
+    if device == "dac":
+        visited_dac = True
+
+    if device == "fft":
+        visited_fft = True
 
     result = 0
     for next in graph[device]:
-        result += count_paths_recursive(next, graph, path, end, required)
-
-    path.remove(device)
+        result += count_paths_recursive(next, visited_dac, visited_fft)
 
     return result
-
-def count_paths_iter(start: str, end: str="out"):
-    queue = [[start, set()]]
-
-    total = 0
-    while len(queue) > 0:
-        device, path = queue[0]
-        queue = queue[1:]
-
-        if end in graph[device]:
-            total += 1
-            continue
-
-        for destination in graph[device]:
-            if destination in path:
-                continue
-
-            path = path.union([destination])
-
-            queue.append([destination, path])
-
-    return total
-
-def find_valid_nodes(graph: dict[str, set[str]]):
-    queue = ["out"]
-    visited = set()
-
-    while len(queue) > 0:
-        search = queue[0]
-        queue = queue[1:]
-
-        if search == "svr":
-            break
-
-        for key, value_set in graph.items():
-            if key in visited:
-                continue
-
-            if search in value_set:
-                visited.add(key)
-                queue.append(key)
-
-    return visited
 
 def part_one(input: list[str]):
     build_graph(input)
 
-    return count_paths_iter("you", graph)
+    return count_paths_recursive("you")
 
 def part_two(input: list[str]):
     build_graph(input)
 
-    return count_paths_recursive("svr", required=frozenset(["dac", "fft"]))
+    return count_paths_recursive("svr", False, False)
